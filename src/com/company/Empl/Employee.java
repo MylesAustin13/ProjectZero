@@ -8,6 +8,7 @@ import java.util.List;
 public class Employee {
     private int emplID;             //Unique identifier for employee
     private String user_name;
+    private String password;
     private String first_name;
     private String last_name;
     private String email;
@@ -24,6 +25,9 @@ public class Employee {
         return other.getBankAccounts();
     }
 
+    public int getEmplID(){
+        return emplID;
+    }
     public String viewLogs(){
         return "lol we didnt learn about this but this placeholder will remind me later i hope";
     }
@@ -34,6 +38,14 @@ public class Employee {
 
     public void setUser_name(String user_name) {
         this.user_name = user_name;
+    }
+
+    public String getPassword(){
+        return password;
+    }
+
+    public void setPassword(String password){
+        this.password = password;
     }
 
     public String getFirst_name() {
