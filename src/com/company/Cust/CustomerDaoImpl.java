@@ -38,10 +38,10 @@ public class CustomerDaoImpl implements CustomerDao {
             customer.setCustID(resultSet.getInt(1)); //Set it into the customer object for convenience
         }
         if(rows > 0){ //If at least 1 row affected, success! (CONSIDER HANDLING CASE WHERE ROW > 1)
-            System.out.println("Employee saved to database!");
+            System.out.println("Customer saved to database!");
         }
         else{
-            System.out.println("Problem saving this employee.");
+            System.out.println("Problem saving this customer.");
         }
 
     }
@@ -64,10 +64,10 @@ public class CustomerDaoImpl implements CustomerDao {
 
         int rows = preppedStatement.executeUpdate();
         if(rows > 0){
-            System.out.println("Employee updated!");
+            System.out.println("Customer updated!");
         }
         else{
-            System.out.println("Problem updating this employee.");
+            System.out.println("Problem updating this customer.");
         }
     }
 
@@ -80,10 +80,10 @@ public class CustomerDaoImpl implements CustomerDao {
 
         int rows = preppedStatement.executeUpdate();
         if(rows > 0){
-            System.out.println("Employee updated!");
+            System.out.println("Customer deleted!");
         }
         else{
-            System.out.println("Problem updating this employee.");
+            System.out.println("Problem deleting this customer: not found.");
         }
 
 
@@ -137,7 +137,7 @@ public class CustomerDaoImpl implements CustomerDao {
             customer = new Customer(custid, user, pass, firstname, lastname, email);
         }
         else{
-            System.out.println("No customer with that username");
+            System.out.println("No customer with that id");
         }
 
         return customer;
@@ -146,7 +146,7 @@ public class CustomerDaoImpl implements CustomerDao {
     @Override
     public List<Customer> getAllCustomers() throws SQLException {
         List<Customer> customers = new ArrayList<>();
-        String sql = "select * from customers;";
+        String sql = "select * from customer;";
 
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(sql);

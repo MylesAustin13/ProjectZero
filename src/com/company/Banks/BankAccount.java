@@ -15,12 +15,26 @@ public class BankAccount {
     private List<MoneyTransfer> pendingTransfers;
     private List<MoneyTransfer> completedTransfers;
 
+    public BankAccount(){}
+
     public BankAccount(double balance){
         this.balance = balance;
     }
 
+    public BankAccount(int BID, double balance, boolean pendingApproval, boolean approved, boolean rejected, int ownerID) {
+        this.BID = BID;
+        this.balance = balance;
+        this.pendingApproval = pendingApproval;
+        this.approved = approved;
+        this.rejected = rejected;
+        this.ownerID = ownerID;
+    }
+
     public int getBID() {
         return BID;
+    }
+    public void setBID(int id){
+        BID = id;
     }
 
     public int getOwnerID(){
@@ -66,6 +80,17 @@ public class BankAccount {
         approved = false;
         rejected = false;
     }
+
+    public boolean getPendingStatus(){
+        return pendingApproval;
+    }
+    public boolean getApprovalStatus(){
+        return approved;
+    }
+    public boolean getRejectionStatus(){
+        return rejected;
+    }
+
 
     /*public boolean postTransferTo(BankAccount other){
         return true;

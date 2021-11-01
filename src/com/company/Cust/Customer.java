@@ -15,9 +15,6 @@ public class Customer {
     private List<BankAccount> accounts;        //A list of all the VALID owned user accounts
     private List<BankAccount> pendingAccounts; // A list of all the PENDING user accounts for this customer
 
-    public List<BankAccount> getBankAccounts(){
-        return accounts;
-    }
 
     public Customer() {
     }
@@ -39,11 +36,30 @@ public class Customer {
         custID = id;
     }
 
+
+
     public boolean applyForBankAccount(double initialbalance){
         BankAccount bank = new BankAccount(initialbalance);
         bank.setPending();
         return true;
     }
+
+    public List<BankAccount> getBankAccounts(){
+        return accounts;
+    }
+
+    public List<BankAccount> getPendingBankAccounts(){
+        return pendingAccounts;
+    }
+
+    public void setAccounts(List<BankAccount> accounts) {
+        this.accounts = accounts;
+    }
+
+    public void setPendingAccounts(List<BankAccount> pendingAccounts) {
+        this.pendingAccounts = pendingAccounts;
+    }
+
 
     public String getUserName() {
         return user_name;

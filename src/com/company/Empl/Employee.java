@@ -13,30 +13,50 @@ public class Employee {
     private String last_name;
     private String email;
 
-    public boolean approveAccount(BankAccount other){ //Approve the pending account (TRUE if successfully approved, FALSE if failed)
-        return false;
+    public Employee() {
     }
 
-    public boolean rejectAccount(BankAccount other){ //Reject the pending account (TRUE if successfully approved, FALSE if failed)
-        return false;
+    public Employee(int emplID, String user_name, String password, String first_name, String last_name, String email) {
+        this.emplID = emplID;
+        this.user_name = user_name;
+        this.password = password;
+        this.first_name = first_name;
+        this.last_name = last_name;
+        this.email = email;
+    }
+
+    public void approveAccount(BankAccount other){ //Approve the pending account
+        other.getApproved();
+    }
+
+    public void rejectAccount(BankAccount other){ //Reject the pending account
+        other.getRejected();
     }
 
     public List<BankAccount> getCustomerBankAccounts(Customer other){
         return other.getBankAccounts();
     }
+    public List<BankAccount> getPendingCustomerBankAccounts(Customer other){
+        return other.getPendingBankAccounts();
+    }
+
 
     public int getEmplID(){
         return emplID;
+    }
+
+    public void setEmplID(int id){
+        emplID = id;
     }
     public String viewLogs(){
         return "lol we didnt learn about this but this placeholder will remind me later i hope";
     }
 
-    public String getUser_name() {
+    public String getUserName() {
         return user_name;
     }
 
-    public void setUser_name(String user_name) {
+    public void setUserName(String user_name) {
         this.user_name = user_name;
     }
 
@@ -48,19 +68,19 @@ public class Employee {
         this.password = password;
     }
 
-    public String getFirst_name() {
+    public String getFirstName() {
         return first_name;
     }
 
-    public void setFirst_name(String first_name) {
+    public void setFirstName(String first_name) {
         this.first_name = first_name;
     }
 
-    public String getLast_name() {
+    public String getLastName() {
         return last_name;
     }
 
-    public void setLast_name(String last_name) {
+    public void setLastName(String last_name) {
         this.last_name = last_name;
     }
 

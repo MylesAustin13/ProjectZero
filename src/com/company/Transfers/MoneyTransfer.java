@@ -1,6 +1,7 @@
 package com.company.Transfers;
 
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 public class MoneyTransfer {
@@ -9,7 +10,37 @@ public class MoneyTransfer {
     private int sender;    //Which account id sent this?
     private int recipient; //Which account id is getting this?
     private boolean pending;
-    private Date completedOn;
+    private Timestamp completedOn;
+
+    public MoneyTransfer(){
+    }
+
+
+
+    public MoneyTransfer(int transferID, double amount, int sender, int recipient, boolean pending, Timestamp completedOn) {
+        this.transferID = transferID;
+        this.amount = amount;
+        this.sender = sender;
+        this.recipient = recipient;
+        this.pending = pending;
+        this.completedOn = completedOn;
+    }
+
+    public int getTransferID() {
+        return transferID;
+    }
+
+    public void setTransferID(int transferID) {
+        this.transferID = transferID;
+    }
+
+    public Timestamp getCompletedOn() {
+        return completedOn;
+    }
+
+    public void setCompletedOn(Timestamp completedOn) {
+        this.completedOn = completedOn;
+    }
 
     public boolean isPending() {
         return pending;
@@ -19,9 +50,15 @@ public class MoneyTransfer {
         pending = true;
     }
 
+    public void setComplete(){
+        pending = false;
+        completedOn = new Timestamp(System.currentTimeMillis());
+    }
+
     public void process(){
         pending = false;
     }
+
     public double getAmount(){
         return amount;
     }
