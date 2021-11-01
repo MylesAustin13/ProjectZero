@@ -1,6 +1,8 @@
 package com.company.Transfers;
 
 import com.company.Banks.BankAccount;
+import com.company.Banks.BankAccountDao;
+import com.company.Banks.BankAccountDaoFactory;
 import com.company.ConnectionFactory;
 
 import java.sql.*;
@@ -23,7 +25,7 @@ public class MoneyTransferDaoImpl implements MoneyTransferDao{
         }
         String sql = "insert into moneytransfers (amount, senderid, receiverid, pending, completed) values (?, ?, ?);";
 
-        PreparedStatement preppedStatement = connection.prepareStatement(sql); //Prepare the sql
+        PreparedStatement preppedStatement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS); //Prepare the sql
         preppedStatement.setDouble(1, transfer.getAmount());
         preppedStatement.setInt(2, transfer.getSender());
         preppedStatement.setInt(3, transfer.getRecipient());
@@ -83,6 +85,24 @@ public class MoneyTransferDaoImpl implements MoneyTransferDao{
         else{
             System.out.println("Problem deleting transfer.");
         }
+    }
+
+    @Override
+    public void executeTransfer(MoneyTransfer transfer, BankAccount sender, BankAccount receiver) throws SQLException {
+        /*
+        PROCEDURE IMPLEMENTATION MAYBE
+         */
+        BankAccountDao bDao = BankAccountDaoFactory.getBankAccountDao(); //Set up interactions with bank accounts
+
+        sender.withdraw(transfer.getAmount()); //Take out the transfer
+        bDao.updateBankAccount(sender); //Update
+
+        receiver.deposit(transfer.getAmount()); //Place it into the other account
+        bDao.updateBankAccount(receiver); //Update
+
+        transfer.setComplete(); //Mark the transfer as completed
+        updateMoneyTransfer(transfer); //Update it in the database
+
     }
 
     @Override

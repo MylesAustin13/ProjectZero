@@ -49,7 +49,7 @@ public class Employee {
         emplID = id;
     }
     public String viewLogs(){
-        return "lol we didnt learn about this but this placeholder will remind me later i hope";
+        return "Placeholder until we cover this";
     }
 
     public String getUserName() {

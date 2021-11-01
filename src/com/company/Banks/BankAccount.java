@@ -12,8 +12,8 @@ public class BankAccount {
     private boolean rejected;            //Got rejected by an employee
     private int ownerID;                //Who owns this account?
 
-    private List<MoneyTransfer> pendingTransfers;
-    private List<MoneyTransfer> completedTransfers;
+    //private List<MoneyTransfer> pendingTransfers;
+    //private List<MoneyTransfer> completedTransfers;
 
     public BankAccount(){}
 
@@ -27,6 +27,10 @@ public class BankAccount {
         this.pendingApproval = pendingApproval;
         this.approved = approved;
         this.rejected = rejected;
+        this.ownerID = ownerID;
+    }
+
+    public void setOwnerID(int ownerID) {
         this.ownerID = ownerID;
     }
 
@@ -92,14 +96,34 @@ public class BankAccount {
     }
 
 
-    /*public boolean postTransferTo(BankAccount other){
-        return true;
-
+    @Override
+    public String toString() {
+        return "BankAccount No. " + BID + ": " + "Balance: $" + balance;
     }
 
-    public boolean acceptTransferFrom(BankAccount other){
-        return true;
-    }*/
+    public MoneyTransfer createTransferTo(double amount, BankAccount other){
+        MoneyTransfer transfer = null;
+
+        if(amount <= 0){ // Reject outright if amount is invalid
+            System.out.println("The entered amount is invalid.");
+            return null;
+        }
+        else if (balance < amount){ //Reject if not enough money to withdraw
+            System.out.println("Insufficient funds.");
+            return null;
+        }
+        else{
+            balance -= amount;
+            System.out.println("Withdrawal successful!");
+            transfer= new MoneyTransfer(); //Create a transfer and set the value
+            transfer.setAmount(amount);
+            //pendingTransfers.add(transfer);
+            return transfer;
+        }
+
+
+
+    }
 
 
 }

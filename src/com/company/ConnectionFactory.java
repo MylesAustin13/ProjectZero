@@ -12,7 +12,7 @@ public class ConnectionFactory {
 
     public static Connection getConnection(){
         if(connection == null){
-            ResourceBundle bundle = ResourceBundle.getBundle("/com/company/dbConfig");
+            ResourceBundle bundle = ResourceBundle.getBundle("com/company/dbConfig");
             String url = bundle.getString("url");
             String username = bundle.getString("username");
             String password = bundle.getString("password");

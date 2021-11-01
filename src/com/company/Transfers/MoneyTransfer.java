@@ -82,4 +82,10 @@ public class MoneyTransfer {
     public void setRecipient(int recipient) {
         this.recipient = recipient;
     }
+
+    @Override
+    public String toString() {
+        return "MoneyTransfer No. " + transferID +
+                ": Sum: " + amount;
+    }
 }

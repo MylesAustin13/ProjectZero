@@ -24,7 +24,7 @@ public class BankAccountDaoImpl implements BankAccountDao {
         }
         String sql = "insert into bankaccounts (balance, ownerid, pending, approved, rejected) values (?, ?, ?, ?, ?);";
 
-        PreparedStatement preppedStatement = connection.prepareStatement(sql); //Prepare the sql
+        PreparedStatement preppedStatement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS); //Prepare the sql
         preppedStatement.setDouble(1, account.getBalance());
         preppedStatement.setInt(2, account.getOwnerID());
         preppedStatement.setBoolean(3, account.getPendingStatus());

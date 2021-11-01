@@ -22,7 +22,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
         }
         String sql = "insert into employee (username, password, firstname, lastname, email) values (?, ?, ?, ?, ?);";
 
-        PreparedStatement preppedStatement = connection.prepareStatement(sql); //Prepare the sql
+        PreparedStatement preppedStatement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS); //Prepare the sql
         preppedStatement.setString(1, employee.getUserName());
         preppedStatement.setString(2, employee.getPassword());
         preppedStatement.setString(3, employee.getFirstName());

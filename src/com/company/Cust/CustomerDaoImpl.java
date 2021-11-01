@@ -25,7 +25,7 @@ public class CustomerDaoImpl implements CustomerDao {
         }
         String sql = "insert into customer (username, password, firstname, lastname, email) values (?, ?, ?, ?, ?);";
 
-        PreparedStatement preppedStatement = connection.prepareStatement(sql); //Prepare the sql
+        PreparedStatement preppedStatement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS); //Prepare the sql
         preppedStatement.setString(1, customer.getUserName());
         preppedStatement.setString(2, customer.getPassword());
         preppedStatement.setString(3, customer.getFirstName());
@@ -34,6 +34,8 @@ public class CustomerDaoImpl implements CustomerDao {
 
         int rows = preppedStatement.executeUpdate();
         ResultSet resultSet = preppedStatement.getGeneratedKeys(); //Get the id for this new item
+
+
         while(resultSet.next()){
             customer.setCustID(resultSet.getInt(1)); //Set it into the customer object for convenience
         }
