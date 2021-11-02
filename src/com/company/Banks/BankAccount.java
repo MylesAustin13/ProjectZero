@@ -44,12 +44,17 @@ public class BankAccount {
     public int getOwnerID(){
         return ownerID;
     }
-    public void deposit(double amount){ //Put money into the bank account
+    public boolean deposit(double amount){ //Put money into the bank account
+        if(amount < 0){
+            System.out.println("The entered amount is invalid.");
+            return false;
+        }
         balance += amount;
+        return true;
     }
 
     public boolean withdraw(double amount){ //Take money from the bank account
-        if(amount <= 0){ // Reject outright if amount is invalid
+        if(amount < 0){ // Reject outright if amount is invalid
             System.out.println("The entered amount is invalid.");
             return false;
         }
@@ -71,10 +76,12 @@ public class BankAccount {
 
     public void getApproved(){
         approved = true;
+        rejected = false;
         pendingApproval = false;
     }
 
     public void getRejected(){
+        approved = false;
         rejected = true;
         pendingApproval = false;
     }
@@ -100,7 +107,7 @@ public class BankAccount {
     public String toString() {
         return "BankAccount No. " + BID + ": " + "Balance: $" + balance;
     }
-
+    /*
     public MoneyTransfer createTransferTo(double amount, BankAccount other){
         MoneyTransfer transfer = null;
 
@@ -124,6 +131,8 @@ public class BankAccount {
 
 
     }
+
+     */
 
 
 }

@@ -23,7 +23,7 @@ public class MoneyTransferDaoImpl implements MoneyTransferDao{
             System.out.println("Null object provided. Cancelling...");
             return;
         }
-        String sql = "insert into moneytransfers (amount, senderid, receiverid, pending, completed) values (?, ?, ?);";
+        String sql = "insert into moneytransfers (amount, senderid, receiverid, pending, completed) values (?, ?, ?, ?, ?);";
 
         PreparedStatement preppedStatement = connection.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS); //Prepare the sql
         preppedStatement.setDouble(1, transfer.getAmount());
@@ -152,6 +152,7 @@ public class MoneyTransferDaoImpl implements MoneyTransferDao{
             boolean pending = resultSet.getBoolean(5);
             Timestamp completed = resultSet.getTimestamp(6);
             MoneyTransfer transfer = new MoneyTransfer(transferid, balance, senderid, receiverID, pending, completed);
+            transfers.add(transfer);
         }
         return transfers;
     }
@@ -196,12 +197,36 @@ public class MoneyTransferDaoImpl implements MoneyTransferDao{
             boolean pending = resultSet.getBoolean(5);
             Timestamp completed = resultSet.getTimestamp(6);
             MoneyTransfer transfer = new MoneyTransfer(transferid, balance, senderid, receiverID, pending, completed);
+            transfers.add(transfer);
         }
         return transfers;
     }
 
     @Override
     public List<MoneyTransfer> getAllTransfersTo(int receiverID) throws SQLException {
+        List<MoneyTransfer> transfers = new ArrayList<>();
+        String sql = "select * from moneytransfers where receiverid = ?;";
+
+        PreparedStatement preppedStatement = connection.prepareStatement(sql);
+        preppedStatement.setInt(1,receiverID);
+
+        ResultSet resultSet = preppedStatement.executeQuery();
+
+        while(resultSet.next()){
+            int transferid = resultSet.getInt(1);
+            double balance = resultSet.getDouble(2);
+            int senderid = resultSet.getInt(3);
+            int receiverid = resultSet.getInt(4);
+            boolean pending = resultSet.getBoolean(5);
+            Timestamp completed = resultSet.getTimestamp(6);
+            MoneyTransfer transfer = new MoneyTransfer(transferid, balance, senderid, receiverid, pending, completed);
+            transfers.add(transfer);
+        }
+        return transfers;
+    }
+
+    @Override
+    public List<MoneyTransfer> getAllPendingTransfersTo(int receiverID) throws SQLException {
         List<MoneyTransfer> transfers = new ArrayList<>();
         String sql = "select * from moneytransfers where receiverid = ? and pending = true;";
 
@@ -217,29 +242,8 @@ public class MoneyTransferDaoImpl implements MoneyTransferDao{
             int receiverid = resultSet.getInt(4);
             boolean pending = resultSet.getBoolean(5);
             Timestamp completed = resultSet.getTimestamp(6);
-            MoneyTransfer transfer = new MoneyTransfer(transferid, balance, senderid, receiverID, pending, completed);
-        }
-        return transfers;
-    }
-
-    @Override
-    public List<MoneyTransfer> getAllPendingTransfersTo(int receiverID) throws SQLException {
-        List<MoneyTransfer> transfers = new ArrayList<>();
-        String sql = "select * from moneytransfers where receiverid = ? and pending = false;";
-
-        PreparedStatement preppedStatement = connection.prepareStatement(sql);
-        preppedStatement.setInt(1,receiverID);
-
-        ResultSet resultSet = preppedStatement.executeQuery();
-
-        while(resultSet.next()){
-            int transferid = resultSet.getInt(1);
-            double balance = resultSet.getDouble(2);
-            int senderid = resultSet.getInt(3);
-            int receiverid = resultSet.getInt(4);
-            boolean pending = resultSet.getBoolean(5);
-            Timestamp completed = resultSet.getTimestamp(6);
-            MoneyTransfer transfer = new MoneyTransfer(transferid, balance, senderid, receiverID, pending, completed);
+            MoneyTransfer transfer = new MoneyTransfer(transferid, balance, senderid, receiverid, pending, completed);
+            transfers.add(transfer);
         }
         return transfers;
     }
@@ -261,7 +265,8 @@ public class MoneyTransferDaoImpl implements MoneyTransferDao{
             int receiverid = resultSet.getInt(4);
             boolean pending = resultSet.getBoolean(5);
             Timestamp completed = resultSet.getTimestamp(6);
-            MoneyTransfer transfer = new MoneyTransfer(transferid, balance, senderid, receiverID, pending, completed);
+            MoneyTransfer transfer = new MoneyTransfer(transferid, balance, senderid, receiverid, pending, completed);
+            transfers.add(transfer);
         }
         return transfers;
     }

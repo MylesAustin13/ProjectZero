@@ -134,6 +134,7 @@ public class BankAccountDaoImpl implements BankAccountDao {
             boolean rejected = resultSet.getBoolean(6);
 
             BankAccount account = new BankAccount(bankid,balance,pending,approved,rejected,ownerid);
+            accounts.add(account);
         }
         return accounts;
     }
@@ -157,6 +158,7 @@ public class BankAccountDaoImpl implements BankAccountDao {
             boolean rejected = resultSet.getBoolean(6);
 
             BankAccount account = new BankAccount(bankid,balance,pending,approved,rejected,ownerid);
+            accounts.add(account);
         }
         return accounts;
     }
@@ -180,6 +182,7 @@ public class BankAccountDaoImpl implements BankAccountDao {
             boolean rejected = resultSet.getBoolean(6);
 
             BankAccount account = new BankAccount(bankid,balance,pending,approved,rejected,ownerid);
+            accounts.add(account);
         }
         return accounts;
     }
@@ -203,6 +206,7 @@ public class BankAccountDaoImpl implements BankAccountDao {
             boolean rejected = resultSet.getBoolean(6);
 
             BankAccount account = new BankAccount(bankid,balance,pending,approved,rejected,ownerid);
+            accounts.add(account);
         }
         return accounts;
     }

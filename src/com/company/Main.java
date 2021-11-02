@@ -47,20 +47,50 @@ public class Main {
         Employee activeEmployee = null;
 
         while(user_currently_active){
-            System.out.println("Are you a new or returning user?");
-            System.out.println("1: New user");
+            System.out.println("Are you a new customer or returning user?");
+            System.out.println("1: New customer");
             System.out.println("2: Returning user");
+            System.out.println("0: Exit");
             new_user = scanner.nextInt();
             scanner.nextLine(); //cleanup
             System.out.println("--------------------------------------------------------");
             switch(new_user){ //HANDLE LOGIN
                 case 1: ////////////////////////////////////////////////////////NEW USER
-                    System.out.println("Will you be creating a customer account or an employee account?");
-                    System.out.println("1: Customer Account");
-                    System.out.println("2: Employee Account");
+                    /*
+                    System.out.println("Will you be creating a customer account");
+                    System.out.println("1: Proceed");
+                    System.out.println("0: Return");
                     user_type = scanner.nextInt();
                     scanner.nextLine(); //Cleanup
-
+                    */
+                    Customer newCustomer = new Customer();
+                    System.out.println("Enter a username.");
+                    uname = scanner.nextLine(); //Being explicit here for safety
+                    newCustomer.setUserName(uname);
+                    System.out.println("Enter your first name.");
+                    fname = scanner.nextLine();
+                    newCustomer.setFirstName(fname);
+                    System.out.println("Enter your last name.");
+                    lname = scanner.nextLine();
+                    newCustomer.setLastName(lname);
+                    System.out.println("Enter your email.");
+                    email = scanner.nextLine();
+                    newCustomer.setEmail(email);
+                    System.out.println("Enter a password.");
+                    password = scanner.nextLine();
+                    newCustomer.setPassword(password);
+                    try {
+                        custDao.addCustomer(newCustomer);
+                    }
+                    catch (SQLIntegrityConstraintViolationException e){
+                        System.out.println("That user name is taken!");
+                        e.printStackTrace();
+                    }
+                    catch (SQLException e) {
+                        System.out.println("There may be an issue with the sql query. Please check for typos!");
+                        e.printStackTrace();
+                    }
+                    /*
                     switch(user_type){
                         case 1: /////////////////////////////////////////////////////////////////////////////////NEW CUSTOMER
                             Customer newCustomer = new Customer();
@@ -91,7 +121,7 @@ public class Main {
                                 e.printStackTrace();
                             }
                             break;
-                        case 2: /////////////////////////////////////////////////////////////////////////////////NEW EMPLOYEE
+                        /*case 2: /////////////////////////////////////////////////////////////////////////////////NEW EMPLOYEE (SKIP FOR NOW)
                             Employee newEmployee = new Employee();
                             System.out.println("Enter a username.");
                             uname = scanner.nextLine(); //Being explicit here for safety
@@ -124,7 +154,7 @@ public class Main {
                         default: ////////////////////////////////////////////////////////////////////////////////WRONG INPUT
                             user_currently_active = false; //break out of loop for now
                             break;
-                    }
+                    } */
                     break;
                 case 2: ///////////////////////////////////////////////////////RETURNING USER
                     System.out.println("Select the account type you will be logging into.");
@@ -182,7 +212,7 @@ public class Main {
                                     System.out.println("Logged in successfully!");
                                 }
                                 else{
-                                    user_logged_in = false;
+                                    user_logged_in = false; //Reset to be safe
                                     System.out.println("Password incorrect. Try again.");
                                 }
                             }
@@ -192,6 +222,9 @@ public class Main {
                     }
 
                     break;
+                case 3:
+                    System.out.println("Goodbye!");
+                    break;
                 default:///////////////////////////////////////////////////////WRONG INPUT
                     user_currently_active = false; //break out of loop for now
                     break;
@@ -200,6 +233,7 @@ public class Main {
             while(user_logged_in){
                 customer_choice = 0; //Reset choices for loops
                 employee_choice = 0;
+                boolean valid_source = false; //Whether the given id/username is applicable
                 switch (user_type){
                     case 1: //////////////////////////////////////////////////CUSTOMER
                         System.out.println("Welcome, " + activeCustomer.getUserName() + "! What would you like to do today?");
@@ -210,6 +244,7 @@ public class Main {
                         System.out.println("5: Initiate a Transfer of Funds to an Account");
                         System.out.println("6: Accept a Transfer from an Account");
                         System.out.println("7: Apply for a New Account");
+                        System.out.println("0: Log out");
                         customer_choice = scanner.nextInt();
                         switch (customer_choice){
                             case 1: ///////////////////////////////////////////////////////////////////////View all active bank accounts on customer
@@ -224,7 +259,7 @@ public class Main {
                                         else{
                                             System.out.println("\t Pending Transfers to this account");
                                             for(MoneyTransfer transfer : pendingTransfers){
-                                                System.out.println("\t" + transfer + "from Account No. " + transfer.getSender());
+                                                System.out.println("\t" + transfer + " from Account No. " + transfer.getSender());
                                             }
                                         }
 
@@ -236,8 +271,43 @@ public class Main {
 
                                 break;
                             case 2: //////////////////////////////////////////////View balance of one account
+                                List<BankAccount> myOwnedAccounts = null;
+
+                                try {
+                                    myOwnedAccounts = bankDao.getAllApprovedBankAccountsOwned(activeCustomer);
+
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+                                if(myOwnedAccounts.isEmpty()){ //This user doesnt have any accounts
+                                    System.out.println("You don't have any active accounts.");
+                                    break;
+                                }
+                                List<Integer> valid_view_ids = new ArrayList<>();
+                                for(BankAccount account : myOwnedAccounts){ //Create a list of accounts the user can pick from
+                                    valid_view_ids.add(account.getBID());
+                                }
                                 System.out.println("Input the id of the account: ");
-                                int bID = scanner.nextInt(); //Maybe exception handle here
+                                int bID = scanner.nextInt();
+                                if(valid_view_ids.contains(bID)){
+                                    valid_source = true;
+                                }
+                                else{
+                                    valid_source = false;
+                                }
+                                while(!valid_source){ //Make sure the customer actually owns the account they are taking money from
+                                    if(valid_view_ids.contains(bID)){
+                                        valid_source = true;
+                                    }
+                                    else{
+                                        System.out.println("Invalid account number. You may choose from your accounts: ");
+                                        for(BankAccount account : myOwnedAccounts){ //show the user the ids
+                                            System.out.println(account);
+                                        }
+                                        bID = scanner.nextInt();
+                                    }
+
+                                }
 
                                 try {//Print the bank account no. and balance
                                     System.out.println(bankDao.getBankAccountByID(bID));
@@ -248,15 +318,50 @@ public class Main {
                                 }
                                 break;
                             case 3: //////////////////////////////////////////////////////////////Deposit
-                                System.out.println("Input the id of the account: ");
-                                int accID = scanner.nextInt(); //Maybe exception handle here
+                                List<BankAccount> myBankingAccounts = null;
 
+                                try {
+                                    myBankingAccounts = bankDao.getAllApprovedBankAccountsOwned(activeCustomer);
+
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+                                if(myBankingAccounts.isEmpty()){ //This user doesn't have any accounts
+                                    System.out.println("You don't have any active accounts.");
+                                    break;
+                                }
+                                List<Integer> valid_deposit_ids = new ArrayList<>();
+                                for(BankAccount account : myBankingAccounts){ //Create a list of accounts the user can pick from
+                                    valid_deposit_ids.add(account.getBID());
+                                }
+                                System.out.println("Input the id of the account: ");
+                                int accID = scanner.nextInt();
+                                if(valid_deposit_ids.contains(accID)){
+                                    valid_source = true;
+                                }
+                                else{
+                                    valid_source = false;
+                                }
+                                while(!valid_source){ //Make sure the customer actually owns the account they are putting money into
+                                    if(valid_deposit_ids.contains(accID)){
+                                        valid_source = true;
+                                    }
+                                    else{
+                                        System.out.println("Invalid account number. You may choose from your accounts: ");
+                                        for(BankAccount account : myBankingAccounts){ //show the user the ids
+                                            System.out.println(account);
+                                        }
+                                        accID = scanner.nextInt();
+                                    }
+
+                                }
                                 System.out.println("Input the amount you wish to deposit");
                                 double amount = scanner.nextDouble();
                                 try {
                                     BankAccount acc = bankDao.getBankAccountByID(accID); //get the bank
-                                    acc.deposit(amount); //Deposit into it
-                                    bankDao.updateBankAccount(acc); //update the database
+                                    boolean deposited = acc.deposit(amount); //Deposit into it
+                                    if(deposited) //If we actually made a change
+                                        bankDao.updateBankAccount(acc); //update the database
 
                                 } catch (SQLException e) {
                                     System.out.println("Check SQL for typos.");
@@ -264,15 +369,52 @@ public class Main {
                                 }
                                 break;
                             case 4: ///////////////////////////////////////////////////////////////////Withdraw
+
+                                List<BankAccount> myBankAccounts = null;
+
+                                try {
+                                    myBankAccounts = bankDao.getAllApprovedBankAccountsOwned(activeCustomer);
+
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+                                if(myBankAccounts.isEmpty()){ //This user doesnt have any accounts
+                                    System.out.println("You don't have any active accounts.");
+                                    break;
+                                }
+                                List<Integer> valid_withdraw_ids = new ArrayList<>();
+                                for(BankAccount account : myBankAccounts){ //Create a list of accounts the user can pick from
+                                    valid_withdraw_ids.add(account.getBID());
+                                }
                                 System.out.println("Input the id of the account: ");
-                                int bankID = scanner.nextInt(); //Maybe exception handle here
+                                int bankID = scanner.nextInt();
+                                if(valid_withdraw_ids.contains(bankID)){
+                                    valid_source = true;
+                                }
+                                else{
+                                    valid_source = false;
+                                }
+                                while(!valid_source){ //Make sure the customer actually owns the account they are taking money from
+                                    if(valid_withdraw_ids.contains(bankID)){
+                                        valid_source = true;
+                                    }
+                                    else{
+                                        System.out.println("Invalid account number. You may choose from your accounts: ");
+                                        for(BankAccount account : myBankAccounts){ //show the user the ids
+                                            System.out.println(account);
+                                        }
+                                        bankID = scanner.nextInt();
+                                    }
+
+                                }
 
                                 System.out.println("Input the amount you wish to deposit");
                                 double funding = scanner.nextDouble();
                                 try {
                                     BankAccount acc = bankDao.getBankAccountByID(bankID); //get the bank
-                                    acc.withdraw(funding); //Withdraw from it
-                                    bankDao.updateBankAccount(acc); //update the database
+                                    boolean withdrew = acc.withdraw(funding); //Withdraw from it
+                                    if(withdrew) //If we actually withdrew money
+                                        bankDao.updateBankAccount(acc); //update the database
                                 } catch (SQLException e) {
                                     System.out.println("Check SQL for typos.");
                                     e.printStackTrace();
@@ -287,12 +429,17 @@ public class Main {
                                     }
                                     else{
                                         int source;
-                                        boolean valid_source = false;
+                                        valid_source = false;
                                         int dest;
                                         double funds;
 
                                         System.out.println("Please enter the amount you wish to send.");
                                         funds = scanner.nextDouble();
+                                        if(funds <= 0){
+                                            System.out.println("Invalid amount. Returning to previous menu.");
+                                            break;
+                                        }
+
 
                                         List<Integer> valid_nums = new ArrayList<>();
                                         for(BankAccount account : myAccounts){ //Create a list of accounts the user can pick from
@@ -300,6 +447,12 @@ public class Main {
                                         }
                                         System.out.println("Please enter the account id of the account you will use to send this.");
                                         source = scanner.nextInt();
+                                        if(valid_nums.contains(source)){
+                                            valid_source = true;
+                                        }
+                                        else{
+                                            valid_source = false;
+                                        }
                                         while(!valid_source){ //Make sure the customer actually owns the account they are taking money from
                                             if(valid_nums.contains(source)){
                                                 valid_source = true;
@@ -309,8 +462,9 @@ public class Main {
                                                 for(BankAccount account : myAccounts){ //show the user the ids
                                                     System.out.println(account);
                                                 }
+                                                source = scanner.nextInt();
                                             }
-                                            source = scanner.nextInt();
+
                                         }
                                         valid_source = false;
 
@@ -353,7 +507,7 @@ public class Main {
                                         else{
                                             System.out.println("Here are the transfers to choose from: ");
                                             for(MoneyTransfer transfer : transfers){
-                                                System.out.println(transfer + "To: " + transfer.getRecipient() + " From: " + transfer.getSender());
+                                                System.out.println(transfer + " To Account No.: " + transfer.getRecipient() + " From Account No.: " + transfer.getSender());
                                             }
                                             System.out.println("Enter the id of the transfer to confirm: ");
                                             int xferid = scanner.nextInt();
@@ -389,6 +543,11 @@ public class Main {
                                 }
 
                                 break;
+                            case 0:
+                                System.out.println("Logging out. Until next time!");
+                                user_logged_in = false;
+                                activeCustomer = null;
+                                break;
                             default:
                                 System.out.println("Invalid input.");
                                 break;
@@ -399,15 +558,20 @@ public class Main {
                         System.out.println("Welcome, " + activeEmployee.getUserName() + "! What business would you like to handle today?");
                         System.out.println("1: Approve / Reject an Account");
                         System.out.println("2: View a Customer's Bank Account");
-                        System.out.println("0: Exit");
+                        System.out.println("0: Log out");
                         employee_choice = scanner.nextInt();
-                        scanner.nextLine(); //cleanup
+                        //scanner.nextLine(); //cleanup
                         switch (employee_choice){
                             case 1:
-                                System.out.println("Enter the Pending Account's ID: ");
+                                System.out.println("Enter the Account's ID: ");
                                 int accID = scanner.nextInt();
                                 try {
                                     BankAccount pendingAccount = bankDao.getBankAccountByID(accID);
+                                    if(pendingAccount.getPendingStatus() != true){ //not actually pending
+                                        System.out.println("This account has already been resolved.");
+                                        break;
+                                    }
+                                    //Else keep going
                                     System.out.println("Account Info----------- ");
                                     System.out.println("Account Owner: " + custDao.getCustomerByID(pendingAccount.getOwnerID()).getUserName());
                                     System.out.println("Account Starting Balance: " + pendingAccount.getBalance());
@@ -441,9 +605,7 @@ public class Main {
                                 BankAccount pendingAccount = null;
                                 try {
                                     pendingAccount = bankDao.getBankAccountByID(bankID);
-                                    //System.out.println(pendingAccount);
                                     System.out.println("Account Info----------- ");
-                                    //System.out.println(pendingAccount.getOwnerID());
                                     System.out.println("Account Owner: " + custDao.getCustomerByID(pendingAccount.getOwnerID()).getUserName());
                                     System.out.println("Account Starting Balance: " + pendingAccount.getBalance());
                                     System.out.println("Account No.: " + pendingAccount.getBID());
@@ -456,17 +618,24 @@ public class Main {
                                 }
 
                                 break;
+                            case 0:
+                                System.out.println("Logging out. Until next time!");
+                                user_logged_in = false;
+                                activeEmployee = null;
+                                break;
                             default:
+                                System.out.println("Invalid input");
                                 break;
                         }
                         break;
                     default:
+                        System.out.println("Invalid input");
                         break;
                 }
             }
 
 
-            user_currently_active = false; //break out of loop for now
+            //user_currently_active = false; //break out of loop for now
         }
     }
 }
