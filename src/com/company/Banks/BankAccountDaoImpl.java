@@ -50,6 +50,26 @@ public class BankAccountDaoImpl implements BankAccountDao {
             System.out.println("Null object provided. Cancelling...");
             return;
         }
+        /**  STORED PROCEDURE
+         * DELIMITER //
+         * create procedure sp_update_bank_account(IN BID integer, IN newbalance double, IN newownerID integer, IN pendingstate boolean, IN approvedstate boolean, IN rejectedstate boolean)
+         * BEGIN
+         * 	update bankaccounts set balance = newbalance, ownerid = newownerID, pending = pendingstate, approved = approvedstate, rejected = rejectedstate where id = BID;
+         * END //
+         * DELIMITER ;
+         * */
+        String call = "{CALL sp_update_bank_account(?,?,?,?,?,?)}";
+        CallableStatement statement = connection.prepareCall(call); //Setup the call
+
+        statement.setInt(1,account.getBID()); //Assign the parameters
+        statement.setDouble(2, account.getBalance());
+        statement.setInt(3, account.getOwnerID());
+        statement.setBoolean(4, account.getPendingStatus());
+        statement.setBoolean(5, account.getApprovalStatus());
+        statement.setBoolean(6, account.getRejectionStatus());
+
+
+        /*
         String sql = "update bankaccounts set balance = ?, ownerid = ?, pending = ?, approved = ?, rejected = ? where id = ?;";
 
         PreparedStatement preppedStatement = connection.prepareStatement(sql); //Prepare the sql
@@ -59,8 +79,8 @@ public class BankAccountDaoImpl implements BankAccountDao {
         preppedStatement.setBoolean(4, account.getApprovalStatus());
         preppedStatement.setBoolean(5, account.getRejectionStatus());
         preppedStatement.setInt(6,account.getBID());
-
-        int rows = preppedStatement.executeUpdate();
+        */
+        int rows = statement.executeUpdate();
 
         if(rows > 0){ //If at least 1 row affected, success! (CONSIDER HANDLING CASE WHERE ROW > 1)
             System.out.println("Account updated!");

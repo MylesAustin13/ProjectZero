@@ -18,7 +18,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.SortedMap;
+
 
 public class Main {
 
@@ -34,14 +34,14 @@ public class Main {
         boolean user_currently_active = true;
         boolean user_logged_in = false;
         int user_type = 0; //0 = none, 1 = customer, 2 = employee
-        int new_user = 0; //0 = none, 1 = new, 2 = returning
-        int customer_choice = 0;
-        int employee_choice = 0;
-        String uname = "";
-        String fname = "";
-        String lname = "";
-        String email = "";
-        String password = "";
+        int new_user; //0 = none, 1 = new, 2 = returning
+        int customer_choice;
+        int employee_choice;
+        String uname;
+        String fname;
+        String lname;
+        String email;
+        String password;
 
         Customer activeCustomer = null;
         Employee activeEmployee = null;
@@ -408,7 +408,7 @@ public class Main {
 
                                 }
 
-                                System.out.println("Input the amount you wish to deposit");
+                                System.out.println("Input the amount you wish to withdraw");
                                 double funding = scanner.nextDouble();
                                 try {
                                     BankAccount acc = bankDao.getBankAccountByID(bankID); //get the bank
@@ -466,7 +466,6 @@ public class Main {
                                             }
 
                                         }
-                                        valid_source = false;
 
                                         System.out.println("Please enter the account number representing the destination.");
                                         dest = scanner.nextInt();
@@ -567,7 +566,7 @@ public class Main {
                                 int accID = scanner.nextInt();
                                 try {
                                     BankAccount pendingAccount = bankDao.getBankAccountByID(accID);
-                                    if(pendingAccount.getPendingStatus() != true){ //not actually pending
+                                    if(!pendingAccount.getPendingStatus()){ //not actually pending
                                         System.out.println("This account has already been resolved.");
                                         break;
                                     }
