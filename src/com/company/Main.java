@@ -45,15 +45,21 @@ public class Main {
 
         Customer activeCustomer = null;
         Employee activeEmployee = null;
-
+        System.out.println("-----------------------------");
+        System.out.println("|                           |");
+        System.out.println("| Welcome to NotAReal Bank! |");
+        System.out.println("|                           |");
+        System.out.println("-----------------------------");
         while(user_currently_active){
-            System.out.println("Are you a new customer or returning user?");
-            System.out.println("1: New customer");
-            System.out.println("2: Returning user");
-            System.out.println("0: Exit");
+            System.out.println("---------------------------------------------");
+            System.out.println("| Are you a new customer or returning user? |");
+            System.out.println("| 1: New customer                           |");
+            System.out.println("| 2: Returning user                         |");
+            System.out.println("| 0: Exit                                   |");
+            System.out.println("---------------------------------------------");
             new_user = scanner.nextInt();
             scanner.nextLine(); //cleanup
-            System.out.println("--------------------------------------------------------");
+            //System.out.println("--------------------------------------------------------");
             switch(new_user){ //HANDLE LOGIN
                 case 1: ////////////////////////////////////////////////////////NEW USER
                     /*
@@ -250,7 +256,7 @@ public class Main {
                             case 1: ///////////////////////////////////////////////////////////////////////View all active bank accounts on customer
                                 try {
                                     List<BankAccount> myAccounts = bankDao.getAllApprovedBankAccountsOwned(activeCustomer);
-                                    for(BankAccount account : myAccounts){
+                                    for(BankAccount account : myAccounts){ //For all the accounts owned
                                         System.out.println(account); //print the account no. and balance
                                         List<MoneyTransfer> pendingTransfers = xferDao.getAllPendingTransfersTo(account.getBID()) ;//Get all the transfers to this account
                                         if(pendingTransfers.size() == 0){
@@ -423,7 +429,7 @@ public class Main {
                             case 5: /////////////////////////////////////////////////////////////////////Create new money transfer
                                 try {
                                     List<BankAccount> myAccounts = bankDao.getAllApprovedBankAccountsOwned(activeCustomer);
-                                    if(myAccounts.isEmpty()){ //This user doesnt have any accounts
+                                    if(myAccounts.isEmpty()){ //This user doesn't have any accounts
                                         System.out.println("You don't have any active accounts.");
 
                                     }
@@ -432,13 +438,6 @@ public class Main {
                                         valid_source = false;
                                         int dest;
                                         double funds;
-
-                                        System.out.println("Please enter the amount you wish to send.");
-                                        funds = scanner.nextDouble();
-                                        if(funds <= 0){
-                                            System.out.println("Invalid amount. Returning to previous menu.");
-                                            break;
-                                        }
 
 
                                         List<Integer> valid_nums = new ArrayList<>();
@@ -465,6 +464,17 @@ public class Main {
                                                 source = scanner.nextInt();
                                             }
 
+                                        }
+
+                                        System.out.println("Please enter the amount you wish to send.");
+                                        funds = scanner.nextDouble();
+                                        if(funds <= 0){
+                                            System.out.println("Invalid amount. Returning to previous menu.");
+                                            break;
+                                        }
+                                        else if(bankDao.getBankAccountByID(source).getBalance() < funds){
+                                            System.out.println("Insufficient funds for this operation.");
+                                            break;
                                         }
 
                                         System.out.println("Please enter the account number representing the destination.");
@@ -557,6 +567,7 @@ public class Main {
                         System.out.println("Welcome, " + activeEmployee.getUserName() + "! What business would you like to handle today?");
                         System.out.println("1: Approve / Reject an Account");
                         System.out.println("2: View a Customer's Bank Account");
+                        System.out.println("3: View all of a Customer's Bank Accounts");
                         System.out.println("0: Log out");
                         employee_choice = scanner.nextInt();
                         //scanner.nextLine(); //cleanup
@@ -617,6 +628,36 @@ public class Main {
                                 }
 
                                 break;
+                            case 3:
+                                System.out.println("Enter the Customer's ID");
+                                int customerID = scanner.nextInt();
+
+                                try {
+                                    List<BankAccount> custAccounts = bankDao.getAllApprovedBankAccountsOwned(custDao.getCustomerByID(customerID));
+                                    if(custAccounts.isEmpty()){
+                                        System.out.println("No Accounts found.");
+                                        break;
+                                    }
+                                    for(BankAccount account : custAccounts){ //For all the accounts owned
+                                        System.out.println(account); //print the account no. and balance
+                                        List<MoneyTransfer> pendingTransfers = xferDao.getAllPendingTransfersTo(account.getBID()) ;//Get all the transfers to this account
+                                        if(pendingTransfers.size() == 0){
+                                            System.out.println("\t No pending transfers to be accepted.");
+                                        }
+                                        else{
+                                            System.out.println("\t Pending Transfers to this account");
+                                            for(MoneyTransfer transfer : pendingTransfers){
+                                                System.out.println("\t" + transfer + " from Account No. " + transfer.getSender());
+                                            }
+                                        }
+
+                                    }
+                                } catch (SQLException e) {
+                                    System.out.println("That user does not exist!");
+                                    //e.printStackTrace();
+                                }
+
+                                break;
                             case 0:
                                 System.out.println("Logging out. Until next time!");
                                 user_logged_in = false;
@@ -636,5 +677,11 @@ public class Main {
 
             //user_currently_active = false; //break out of loop for now
         }
+
+        System.out.println("------------------------------------------------");
+        System.out.println("|                                              |");
+        System.out.println("| Thank you for banking with to NotAReal Bank! |");
+        System.out.println("|                                              |");
+        System.out.println("------------------------------------------------");
     }
 }
