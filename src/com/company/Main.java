@@ -161,6 +161,31 @@ public class Main {
                             }
                             break;
                         case 2: ////////////////////////////////////////////////////////////////////////////////RETURNING EMPLOYEE
+                            System.out.println("Enter username: ");
+                            uname = scanner.nextLine();
+                            try {
+                                activeEmployee = emplDao.getEmployeeByUserName(uname);
+                            } catch (SQLException e) {
+                                System.out.println("Check the sql for typos!");
+                                e.printStackTrace();
+                            }
+                            if(activeEmployee == null){ //Login failed, username not in table.
+                                user_logged_in = false; //Set it again, just to make sure
+                                System.out.println("No customer with that username is present. Try again.");
+                            }
+                            else{ //Try to insert password
+                                System.out.println("Enter password: ");
+                                password = scanner.nextLine();
+
+                                if(password.equals(activeEmployee.getPassword())){
+                                    user_logged_in = true;
+                                    System.out.println("Logged in successfully!");
+                                }
+                                else{
+                                    user_logged_in = false;
+                                    System.out.println("Password incorrect. Try again.");
+                                }
+                            }
                             break;
                         default:
                             break;
@@ -173,6 +198,8 @@ public class Main {
             }
             //IF LOGGED IN, HANDLE FUNCTIONS
             while(user_logged_in){
+                customer_choice = 0; //Reset choices for loops
+                employee_choice = 0;
                 switch (user_type){
                     case 1: //////////////////////////////////////////////////CUSTOMER
                         System.out.println("Welcome, " + activeCustomer.getUserName() + "! What would you like to do today?");
@@ -208,11 +235,48 @@ public class Main {
                                 }
 
                                 break;
-                            case 2:
+                            case 2: //////////////////////////////////////////////View balance of one account
+                                System.out.println("Input the id of the account: ");
+                                int bID = scanner.nextInt(); //Maybe exception handle here
+
+                                try {//Print the bank account no. and balance
+                                    System.out.println(bankDao.getBankAccountByID(bID));
+
+                                } catch (SQLException e) {
+                                    System.out.println("Check SQL for typos.");
+                                    e.printStackTrace();
+                                }
                                 break;
-                            case 3:
+                            case 3: //////////////////////////////////////////////////////////////Deposit
+                                System.out.println("Input the id of the account: ");
+                                int accID = scanner.nextInt(); //Maybe exception handle here
+
+                                System.out.println("Input the amount you wish to deposit");
+                                double amount = scanner.nextDouble();
+                                try {
+                                    BankAccount acc = bankDao.getBankAccountByID(accID); //get the bank
+                                    acc.deposit(amount); //Deposit into it
+                                    bankDao.updateBankAccount(acc); //update the database
+
+                                } catch (SQLException e) {
+                                    System.out.println("Check SQL for typos.");
+                                    e.printStackTrace();
+                                }
                                 break;
-                            case 4:
+                            case 4: ///////////////////////////////////////////////////////////////////Withdraw
+                                System.out.println("Input the id of the account: ");
+                                int bankID = scanner.nextInt(); //Maybe exception handle here
+
+                                System.out.println("Input the amount you wish to deposit");
+                                double funding = scanner.nextDouble();
+                                try {
+                                    BankAccount acc = bankDao.getBankAccountByID(bankID); //get the bank
+                                    acc.withdraw(funding); //Withdraw from it
+                                    bankDao.updateBankAccount(acc); //update the database
+                                } catch (SQLException e) {
+                                    System.out.println("Check SQL for typos.");
+                                    e.printStackTrace();
+                                }
                                 break;
                             case 5: /////////////////////////////////////////////////////////////////////Create new money transfer
                                 try {
@@ -282,18 +346,30 @@ public class Main {
                                         for(BankAccount account : myAccounts){ //Get all the transfers.
                                             transfers.addAll(xferDao.getAllPendingTransfersTo(account.getBID()));
                                         }
-                                        System.out.println("Here are the transfers to choose from: ");
-                                        for(MoneyTransfer transfer : transfers){
-                                            System.out.println(transfer + "To: " + transfer.getRecipient() + " From: " + transfer.getSender());
+                                        if(transfers.isEmpty()){ //No transfers for any accounts
+                                            System.out.println("No pending transfers.");
+                                            break;
                                         }
+                                        else{
+                                            System.out.println("Here are the transfers to choose from: ");
+                                            for(MoneyTransfer transfer : transfers){
+                                                System.out.println(transfer + "To: " + transfer.getRecipient() + " From: " + transfer.getSender());
+                                            }
+                                            System.out.println("Enter the id of the transfer to confirm: ");
+                                            int xferid = scanner.nextInt();
+                                            MoneyTransfer xfer = xferDao.getTransferByID(xferid);
+
+                                            //Complete the transfer
+                                            xferDao.executeTransfer(xfer, bankDao.getBankAccountByID(xfer.getSender()),bankDao.getBankAccountByID(xfer.getRecipient()));
+
+                                            System.out.println("Transfer complete!");
+                                        }
+
                                     }
                                 } catch (SQLException e) {
                                     System.out.println("Check for typos.");
                                     e.printStackTrace();
                                 }
-
-
-
 
                                 break;
                             case 7: ////////////////////////////////////////////////////////////////////////////Apply for a new account
@@ -319,6 +395,70 @@ public class Main {
                         }
                         break;
                     case 2: //////////////////////////////////////////////////EMPLOYEE
+                        employee_choice = 0; //Reset if looping
+                        System.out.println("Welcome, " + activeEmployee.getUserName() + "! What business would you like to handle today?");
+                        System.out.println("1: Approve / Reject an Account");
+                        System.out.println("2: View a Customer's Bank Account");
+                        System.out.println("0: Exit");
+                        employee_choice = scanner.nextInt();
+                        scanner.nextLine(); //cleanup
+                        switch (employee_choice){
+                            case 1:
+                                System.out.println("Enter the Pending Account's ID: ");
+                                int accID = scanner.nextInt();
+                                try {
+                                    BankAccount pendingAccount = bankDao.getBankAccountByID(accID);
+                                    System.out.println("Account Info----------- ");
+                                    System.out.println("Account Owner: " + custDao.getCustomerByID(pendingAccount.getOwnerID()).getUserName());
+                                    System.out.println("Account Starting Balance: " + pendingAccount.getBalance());
+                                    System.out.println("Account No.: " + pendingAccount.getBID());
+                                    System.out.println("Will you approve or reject the account?");
+                                    System.out.println("1: Approve");
+                                    System.out.println("2: Reject");
+                                    int empl_approve = scanner.nextInt(); ///////////0 - none, 1 - approve, 2 - reject
+
+                                    switch (empl_approve){
+                                        case 1:
+                                            pendingAccount.getApproved(); //Approve the account
+                                            bankDao.updateBankAccount(pendingAccount); //Update DB with new data
+                                            break;
+                                        case 2:
+                                            pendingAccount.getRejected(); //Reject the account
+                                            bankDao.updateBankAccount(pendingAccount); //Update DB with new data
+                                            break;
+                                        default:
+                                            break;
+                                    }
+
+                                } catch (SQLException e) {
+                                    System.out.println("Check SQL for typos.");
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case 2:
+                                System.out.println("Enter the Bank Account's ID");
+                                int bankID = scanner.nextInt();
+                                BankAccount pendingAccount = null;
+                                try {
+                                    pendingAccount = bankDao.getBankAccountByID(bankID);
+                                    //System.out.println(pendingAccount);
+                                    System.out.println("Account Info----------- ");
+                                    //System.out.println(pendingAccount.getOwnerID());
+                                    System.out.println("Account Owner: " + custDao.getCustomerByID(pendingAccount.getOwnerID()).getUserName());
+                                    System.out.println("Account Starting Balance: " + pendingAccount.getBalance());
+                                    System.out.println("Account No.: " + pendingAccount.getBID());
+                                    System.out.println("Pending Status: " + (pendingAccount.getPendingStatus() ? "Currently Pending" : "Resolved" ) );
+                                    if(!pendingAccount.getPendingStatus()){
+                                        System.out.println("Approval Status: " + (pendingAccount.getApprovalStatus() ? "Approved" : "Rejected"));
+                                    }
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+
+                                break;
+                            default:
+                                break;
+                        }
                         break;
                     default:
                         break;

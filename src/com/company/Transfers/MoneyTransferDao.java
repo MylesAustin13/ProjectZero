@@ -12,6 +12,8 @@ public interface MoneyTransferDao {
 
     void executeTransfer(MoneyTransfer transfer, BankAccount sender, BankAccount receiver) throws SQLException;
 
+    MoneyTransfer getTransferByID(int tID) throws SQLException;
+
     List<MoneyTransfer> getAllTransfersFrom(int senderID) throws SQLException;              //Get all the transfers where the sender is this bank account
     List<MoneyTransfer> getAllPendingTransfersFrom(int senderID) throws SQLException;       //Get all the unfinished transfers where the sender is this bank account
     List<MoneyTransfer> getAllCompletedTransfersFrom(int senderID) throws SQLException;     //Get all the finished transfers where the sender is this bank account (LOGGING)

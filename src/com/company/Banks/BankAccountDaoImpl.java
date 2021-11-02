@@ -101,10 +101,11 @@ public class BankAccountDaoImpl implements BankAccountDao {
         if(resultSet != null){ //Found at least 1 record
             int bankid = resultSet.getInt(1);
             double balance = resultSet.getDouble(2);
-            boolean pending = resultSet.getBoolean(3);
-            boolean approved = resultSet.getBoolean(4);
-            boolean rejected = resultSet.getBoolean(5);
-            int ownerid = resultSet.getInt(6);
+            int ownerid = resultSet.getInt(3);
+            boolean pending = resultSet.getBoolean(4);
+            boolean approved = resultSet.getBoolean(5);
+            boolean rejected = resultSet.getBoolean(6);
+
             account = new BankAccount(bankid,balance,pending,approved,rejected,ownerid);
         }
         else{
@@ -127,10 +128,11 @@ public class BankAccountDaoImpl implements BankAccountDao {
         while(resultSet.next()){
             int bankid = resultSet.getInt(1);
             double balance = resultSet.getDouble(2);
-            boolean pending = resultSet.getBoolean(3);
-            boolean approved = resultSet.getBoolean(4);
-            boolean rejected = resultSet.getBoolean(5);
-            int ownerid = resultSet.getInt(6);
+            int ownerid = resultSet.getInt(3);
+            boolean pending = resultSet.getBoolean(4);
+            boolean approved = resultSet.getBoolean(5);
+            boolean rejected = resultSet.getBoolean(6);
+
             BankAccount account = new BankAccount(bankid,balance,pending,approved,rejected,ownerid);
         }
         return accounts;
@@ -149,10 +151,11 @@ public class BankAccountDaoImpl implements BankAccountDao {
         while(resultSet.next()){
             int bankid = resultSet.getInt(1);
             double balance = resultSet.getDouble(2);
-            boolean pending = resultSet.getBoolean(3);
-            boolean approved = resultSet.getBoolean(4);
-            boolean rejected = resultSet.getBoolean(5);
-            int ownerid = resultSet.getInt(6);
+            int ownerid = resultSet.getInt(3);
+            boolean pending = resultSet.getBoolean(4);
+            boolean approved = resultSet.getBoolean(5);
+            boolean rejected = resultSet.getBoolean(6);
+
             BankAccount account = new BankAccount(bankid,balance,pending,approved,rejected,ownerid);
         }
         return accounts;
@@ -171,10 +174,11 @@ public class BankAccountDaoImpl implements BankAccountDao {
         while(resultSet.next()){
             int bankid = resultSet.getInt(1);
             double balance = resultSet.getDouble(2);
-            boolean pending = resultSet.getBoolean(3);
-            boolean approved = resultSet.getBoolean(4);
-            boolean rejected = resultSet.getBoolean(5);
-            int ownerid = resultSet.getInt(6);
+            int ownerid = resultSet.getInt(3);
+            boolean pending = resultSet.getBoolean(4);
+            boolean approved = resultSet.getBoolean(5);
+            boolean rejected = resultSet.getBoolean(6);
+
             BankAccount account = new BankAccount(bankid,balance,pending,approved,rejected,ownerid);
         }
         return accounts;
@@ -193,10 +197,11 @@ public class BankAccountDaoImpl implements BankAccountDao {
         while(resultSet.next()){
             int bankid = resultSet.getInt(1);
             double balance = resultSet.getDouble(2);
-            boolean pending = resultSet.getBoolean(3);
-            boolean approved = resultSet.getBoolean(4);
-            boolean rejected = resultSet.getBoolean(5);
-            int ownerid = resultSet.getInt(6);
+            int ownerid = resultSet.getInt(3);
+            boolean pending = resultSet.getBoolean(4);
+            boolean approved = resultSet.getBoolean(5);
+            boolean rejected = resultSet.getBoolean(6);
+
             BankAccount account = new BankAccount(bankid,balance,pending,approved,rejected,ownerid);
         }
         return accounts;

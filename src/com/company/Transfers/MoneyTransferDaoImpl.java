@@ -106,6 +106,35 @@ public class MoneyTransferDaoImpl implements MoneyTransferDao{
     }
 
     @Override
+    public MoneyTransfer getTransferByID(int tID) throws SQLException {
+        MoneyTransfer transfer = new MoneyTransfer();
+        String sql = "select * from moneytransfers where id = ?;";
+
+        PreparedStatement preppedStatement = connection.prepareStatement(sql);
+        preppedStatement.setInt(1, tID);
+
+        ResultSet resultSet = preppedStatement.executeQuery();
+        resultSet.next();
+
+        if(resultSet != null){ //Found at least 1 record
+            int transferid = resultSet.getInt(1);
+            double amount = resultSet.getDouble(2);
+            int senderID = resultSet.getInt(3);
+            int receiverID = resultSet.getInt(4);
+            boolean pending = resultSet.getBoolean(5);
+            Timestamp completed = resultSet.getTimestamp(6);
+            transfer = new MoneyTransfer(transferid, amount, senderID, receiverID, pending, completed);
+        }
+        else{
+            System.out.println("No transfer with that id");
+        }
+
+        return transfer;
+
+
+    }
+
+    @Override
     public List<MoneyTransfer> getAllTransfersFrom(int senderID) throws SQLException {
         List<MoneyTransfer> transfers = new ArrayList<>();
         String sql = "select * from moneytransfers where senderid = ?;";
