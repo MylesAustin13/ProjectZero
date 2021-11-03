@@ -91,11 +91,11 @@ public class Main {
                     }
                     catch (SQLIntegrityConstraintViolationException e){
                         System.out.println("That user name is taken!");
-                        e.printStackTrace();
+
                     }
                     catch (SQLException e) {
                         System.out.println("There may be an issue with the sql query. Please check for typos!");
-                        e.printStackTrace();
+
                     }
                     /*
                     switch(user_type){
@@ -301,7 +301,7 @@ public class Main {
                                 } catch (SQLException e) {
                                     e.printStackTrace();
                                 }
-                                if(myOwnedAccounts.isEmpty()){ //This user doesnt have any accounts
+                                if(myOwnedAccounts == null || myOwnedAccounts.isEmpty()){ //This user doesnt have any accounts
                                     System.out.println("You don't have any active accounts.");
                                     break;
                                 }
@@ -348,7 +348,7 @@ public class Main {
                                 } catch (SQLException e) {
                                     e.printStackTrace();
                                 }
-                                if(myBankingAccounts.isEmpty()){ //This user doesn't have any accounts
+                                if(myBankingAccounts == null || myBankingAccounts.isEmpty()){ //This user doesn't have any accounts
                                     System.out.println("You don't have any active accounts.");
                                     break;
                                 }
@@ -400,7 +400,7 @@ public class Main {
                                 } catch (SQLException e) {
                                     e.printStackTrace();
                                 }
-                                if(myBankAccounts.isEmpty()){ //This user doesnt have any accounts
+                                if(myBankAccounts == null || myBankAccounts.isEmpty()){ //This user doesnt have any accounts
                                     System.out.println("You don't have any active accounts.");
                                     break;
                                 }
@@ -513,7 +513,7 @@ public class Main {
 
                                 break;
                             case 6: ///////////////////////////////////////////////////////////////////////////Accept funds from a transfer
-                                List<BankAccount> myAccounts = null;
+                                List<BankAccount> myAccounts;
                                 try {
                                     myAccounts = bankDao.getAllApprovedBankAccountsOwned(activeCustomer); //Get all accounts
                                     if(myAccounts.isEmpty()){ //This user doesnt have any accounts
@@ -584,7 +584,8 @@ public class Main {
                         System.out.println("Welcome, " + activeEmployee.getUserName() + "! What business would you like to handle today?");
                         System.out.println("|1: Approve / Reject an Account                                    |");
                         System.out.println("|2: View a Customer's Bank Account                                 |");
-                        System.out.println("|3: View all of a Customer's Bank Accounts                         |");
+                        System.out.println("|3: View the Transfer History of an Account                        |");
+                        System.out.println("|4: View all of a Customer's Bank Accounts                         |");
                         System.out.println("|0: Log out                                                        |");
                         System.out.println("--------------------------------------------------------------------");
                         employee_choice = scanner.nextInt();
@@ -630,7 +631,7 @@ public class Main {
                             case 2:
                                 System.out.println("Enter the Bank Account's ID");
                                 int bankID = scanner.nextInt();
-                                BankAccount pendingAccount = null;
+                                BankAccount pendingAccount;
                                 try {
                                     pendingAccount = bankDao.getBankAccountByID(bankID);
                                     System.out.println("Account Info----------- ");
@@ -647,6 +648,37 @@ public class Main {
 
                                 break;
                             case 3:
+                                System.out.println("Enter the ID of the Account you wish to review.");
+                                int bankLogID = scanner.nextInt();
+
+                                try {
+                                    List<MoneyTransfer> viewedInboundTransfers = xferDao.getAllCompletedTransfersTo(bankLogID) ;//Get all the transfers to this account
+                                    if(viewedInboundTransfers.size() == 0){
+                                        System.out.println("\t No transfers have been made to deposit into this account.");
+                                    }
+                                    else{
+                                        System.out.println("\t Completed Transfers depositing to this account");
+                                        for(MoneyTransfer transfer : viewedInboundTransfers){
+                                            System.out.println("\t \t" + transfer + " from Account No. " + transfer.getSender() + " COMPLETED ON: " + transfer.getCompletedOn());
+                                        }
+                                    }
+                                    List<MoneyTransfer> viewedOutboundTransfers = xferDao.getAllCompletedTransfersFrom(bankLogID) ;//Get all the transfers from this account
+                                    if(viewedOutboundTransfers.size() == 0){
+                                        System.out.println("\t No transfers have been made withdrawing from this account.");
+                                    }
+                                    else{
+                                        System.out.println("\t Completed Transfers withdrawing from this account");
+                                        for(MoneyTransfer transfer : viewedOutboundTransfers){
+                                            System.out.println("\t \t" + transfer + " to Account No. " + transfer.getRecipient()+ " COMPLETED ON: " + transfer.getCompletedOn());
+                                        }
+                                    }
+                                } catch (SQLException e) {
+                                    System.out.println("Account not found.");
+                                    break;
+                                }
+
+                                break;
+                            case 4:
                                 System.out.println("Enter the Customer's ID");
                                 int customerID = scanner.nextInt();
 

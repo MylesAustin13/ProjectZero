@@ -85,7 +85,7 @@ public class MoneyTransfer {
 
     @Override
     public String toString() {
-        return "MoneyTransfer No.: " + transferID +
-                " Sum: " + amount;
+        return "Money Transfer No.: " + transferID +
+                " Sum: $" + amount;
     }
 }
