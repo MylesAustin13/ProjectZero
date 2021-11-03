@@ -87,6 +87,7 @@ public class Main {
                     newCustomer.setPassword(password);
                     try {
                         custDao.addCustomer(newCustomer);
+                        System.out.println("You have been registered! Your ID No.: " + newCustomer.getCustID());
                     }
                     catch (SQLIntegrityConstraintViolationException e){
                         System.out.println("That user name is taken!");
@@ -163,9 +164,11 @@ public class Main {
                     } */
                     break;
                 case 2: ///////////////////////////////////////////////////////RETURNING USER
-                    System.out.println("Select the account type you will be logging into.");
-                    System.out.println("1: Customer Account");
-                    System.out.println("2: Employee Account");
+                    System.out.println("---------------------------------------------------");
+                    System.out.println("|Select the account type you will be logging into.|");
+                    System.out.println("|1: Customer Account                              |");
+                    System.out.println("|2: Employee Account                              |");
+                    System.out.println("---------------------------------------------------");
                     user_type = scanner.nextInt();
                     scanner.nextLine(); //Cleanup
                     switch (user_type){
@@ -242,15 +245,17 @@ public class Main {
                 boolean valid_source = false; //Whether the given id/username is applicable
                 switch (user_type){
                     case 1: //////////////////////////////////////////////////CUSTOMER
-                        System.out.println("Welcome, " + activeCustomer.getUserName() + "! What would you like to do today?");
-                        System.out.println("1: View Summary of Active Accounts");
-                        System.out.println("2: View Balance of Specific Account");
-                        System.out.println("3: Make a Deposit to an Account");
-                        System.out.println("4: Make a Withdrawal from an Account");
-                        System.out.println("5: Initiate a Transfer of Funds to an Account");
-                        System.out.println("6: Accept a Transfer from an Account");
-                        System.out.println("7: Apply for a New Account");
-                        System.out.println("0: Log out");
+                        System.out.println("--------------------------------------------------------------");
+                        System.out.println("|Welcome, " + activeCustomer.getUserName() + "! What would you like to do today?");
+                        System.out.println("|1: View Summary of Active Accounts                          |");
+                        System.out.println("|2: View Balance of Specific Account                         |");
+                        System.out.println("|3: Make a Deposit to an Account                             |");
+                        System.out.println("|4: Make a Withdrawal from an Account                        |");
+                        System.out.println("|5: Initiate a Transfer of Funds to an Account               |");
+                        System.out.println("|6: Accept a Transfer from an Account                        |");
+                        System.out.println("|7: Apply for a New Account                                  |");
+                        System.out.println("|0: Log out                                                  |");
+                        System.out.println("-------------------------------------------------------------");
                         customer_choice = scanner.nextInt();
                         switch (customer_choice){
                             case 1: ///////////////////////////////////////////////////////////////////////View all active bank accounts on customer
@@ -258,14 +263,25 @@ public class Main {
                                     List<BankAccount> myAccounts = bankDao.getAllApprovedBankAccountsOwned(activeCustomer);
                                     for(BankAccount account : myAccounts){ //For all the accounts owned
                                         System.out.println(account); //print the account no. and balance
-                                        List<MoneyTransfer> pendingTransfers = xferDao.getAllPendingTransfersTo(account.getBID()) ;//Get all the transfers to this account
-                                        if(pendingTransfers.size() == 0){
-                                            System.out.println("\t No pending transfers to be accepted.");
+                                        List<MoneyTransfer> pendingInboundTransfers = xferDao.getAllPendingTransfersTo(account.getBID()) ;//Get all the transfers to this account
+                                        if(pendingInboundTransfers.size() == 0){
+                                            System.out.println("\t No incoming pending transfers to be accepted.");
                                         }
                                         else{
                                             System.out.println("\t Pending Transfers to this account");
-                                            for(MoneyTransfer transfer : pendingTransfers){
-                                                System.out.println("\t" + transfer + " from Account No. " + transfer.getSender());
+                                            for(MoneyTransfer transfer : pendingInboundTransfers){
+                                                System.out.println("\t \t" + transfer + " from Account No. " + transfer.getSender());
+                                            }
+                                        }
+
+                                        List<MoneyTransfer> pendingOutboundTransfers = xferDao.getAllPendingTransfersFrom(account.getBID()) ;//Get all the transfers from this account
+                                        if(pendingOutboundTransfers.size() == 0){
+                                            System.out.println("\t No outgoing pending transfers to be accepted.");
+                                        }
+                                        else{
+                                            System.out.println("\t Pending Transfers from this account");
+                                            for(MoneyTransfer transfer : pendingOutboundTransfers){
+                                                System.out.println("\t \t" + transfer + " to Account No. " + transfer.getRecipient());
                                             }
                                         }
 
@@ -564,11 +580,13 @@ public class Main {
                         break;
                     case 2: //////////////////////////////////////////////////EMPLOYEE
                         employee_choice = 0; //Reset if looping
+                        System.out.println("--------------------------------------------------------------------");
                         System.out.println("Welcome, " + activeEmployee.getUserName() + "! What business would you like to handle today?");
-                        System.out.println("1: Approve / Reject an Account");
-                        System.out.println("2: View a Customer's Bank Account");
-                        System.out.println("3: View all of a Customer's Bank Accounts");
-                        System.out.println("0: Log out");
+                        System.out.println("|1: Approve / Reject an Account                                    |");
+                        System.out.println("|2: View a Customer's Bank Account                                 |");
+                        System.out.println("|3: View all of a Customer's Bank Accounts                         |");
+                        System.out.println("|0: Log out                                                        |");
+                        System.out.println("--------------------------------------------------------------------");
                         employee_choice = scanner.nextInt();
                         //scanner.nextLine(); //cleanup
                         switch (employee_choice){
@@ -640,17 +658,27 @@ public class Main {
                                     }
                                     for(BankAccount account : custAccounts){ //For all the accounts owned
                                         System.out.println(account); //print the account no. and balance
-                                        List<MoneyTransfer> pendingTransfers = xferDao.getAllPendingTransfersTo(account.getBID()) ;//Get all the transfers to this account
-                                        if(pendingTransfers.size() == 0){
-                                            System.out.println("\t No pending transfers to be accepted.");
+                                        List<MoneyTransfer> pendingInboundTransfers = xferDao.getAllPendingTransfersTo(account.getBID()) ;//Get all the transfers to this account
+                                        if(pendingInboundTransfers.size() == 0){
+                                            System.out.println("\t No incoming pending transfers to be accepted.");
                                         }
                                         else{
                                             System.out.println("\t Pending Transfers to this account");
-                                            for(MoneyTransfer transfer : pendingTransfers){
-                                                System.out.println("\t" + transfer + " from Account No. " + transfer.getSender());
+                                            for(MoneyTransfer transfer : pendingInboundTransfers){
+                                                System.out.println("\t \t" + transfer + " from Account No. " + transfer.getSender());
                                             }
                                         }
 
+                                        List<MoneyTransfer> pendingOutboundTransfers = xferDao.getAllPendingTransfersFrom(account.getBID()) ;//Get all the transfers from this account
+                                        if(pendingOutboundTransfers.size() == 0){
+                                            System.out.println("\t No outgoing pending transfers to be accepted.");
+                                        }
+                                        else{
+                                            System.out.println("\t Pending Transfers from this account");
+                                            for(MoneyTransfer transfer : pendingOutboundTransfers){
+                                                System.out.println("\t \t" + transfer + " to Account No. " + transfer.getRecipient());
+                                            }
+                                        }
                                     }
                                 } catch (SQLException e) {
                                     System.out.println("That user does not exist!");

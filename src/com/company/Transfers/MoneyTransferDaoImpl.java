@@ -175,6 +175,7 @@ public class MoneyTransferDaoImpl implements MoneyTransferDao{
             boolean pending = resultSet.getBoolean(5);
             Timestamp completed = resultSet.getTimestamp(6);
             MoneyTransfer transfer = new MoneyTransfer(transferid, balance, senderid, receiverID, pending, completed);
+            transfers.add(transfer);
         }
         return transfers;
     }
