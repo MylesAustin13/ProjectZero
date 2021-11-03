@@ -270,7 +270,7 @@ public class Main {
                                         else{
                                             System.out.println("\t Pending Transfers to this account");
                                             for(MoneyTransfer transfer : pendingInboundTransfers){
-                                                System.out.println("\t \t" + transfer + " from Account No. " + transfer.getSender());
+                                                System.out.println("\t \t" + transfer + "| From Account No. " + transfer.getSender());
                                             }
                                         }
 
@@ -281,7 +281,7 @@ public class Main {
                                         else{
                                             System.out.println("\t Pending Transfers from this account");
                                             for(MoneyTransfer transfer : pendingOutboundTransfers){
-                                                System.out.println("\t \t" + transfer + " to Account No. " + transfer.getRecipient());
+                                                System.out.println("\t \t" + transfer + "| To Account No. " + transfer.getRecipient());
                                             }
                                         }
 
@@ -532,7 +532,7 @@ public class Main {
                                         else{
                                             System.out.println("Here are the transfers to choose from: ");
                                             for(MoneyTransfer transfer : transfers){
-                                                System.out.println(transfer + " To Account No.: " + transfer.getRecipient() + " From Account No.: " + transfer.getSender());
+                                                System.out.println(transfer + "| To Account No.: " + transfer.getRecipient() + "| From Account No.: " + transfer.getSender());
                                             }
                                             System.out.println("Enter the id of the transfer to confirm: ");
                                             int xferid = scanner.nextInt();
@@ -560,7 +560,7 @@ public class Main {
                                 bank.setOwnerID(activeCustomer.getCustID()); //Set who owns this account
                                 try {
                                     bankDao.addBankAccount(bank);
-                                    System.out.println("Account initialized! Please wait for an employee to review it.");
+                                    System.out.println("Account initialized! ID: " + bank.getBID() + " Please wait for an employee to review it.");
 
                                 } catch (SQLException e) {
                                     System.out.println("Check sql for typos.");
@@ -659,7 +659,7 @@ public class Main {
                                     else{
                                         System.out.println("\t Completed Transfers depositing to this account");
                                         for(MoneyTransfer transfer : viewedInboundTransfers){
-                                            System.out.println("\t \t" + transfer + " from Account No. " + transfer.getSender() + " COMPLETED ON: " + transfer.getCompletedOn());
+                                            System.out.println("\t \t" + transfer + "| From Account No. " + transfer.getSender() + "| COMPLETED ON: " + transfer.getCompletedOn());
                                         }
                                     }
                                     List<MoneyTransfer> viewedOutboundTransfers = xferDao.getAllCompletedTransfersFrom(bankLogID) ;//Get all the transfers from this account
@@ -669,7 +669,7 @@ public class Main {
                                     else{
                                         System.out.println("\t Completed Transfers withdrawing from this account");
                                         for(MoneyTransfer transfer : viewedOutboundTransfers){
-                                            System.out.println("\t \t" + transfer + " to Account No. " + transfer.getRecipient()+ " COMPLETED ON: " + transfer.getCompletedOn());
+                                            System.out.println("\t \t" + transfer + "| To Account No. " + transfer.getRecipient()+ "| COMPLETED ON: " + transfer.getCompletedOn());
                                         }
                                     }
                                 } catch (SQLException e) {
@@ -697,7 +697,7 @@ public class Main {
                                         else{
                                             System.out.println("\t Pending Transfers to this account");
                                             for(MoneyTransfer transfer : pendingInboundTransfers){
-                                                System.out.println("\t \t" + transfer + " from Account No. " + transfer.getSender());
+                                                System.out.println("\t \t" + transfer + "| From Account No. " + transfer.getSender());
                                             }
                                         }
 
@@ -708,7 +708,7 @@ public class Main {
                                         else{
                                             System.out.println("\t Pending Transfers from this account");
                                             for(MoneyTransfer transfer : pendingOutboundTransfers){
-                                                System.out.println("\t \t" + transfer + " to Account No. " + transfer.getRecipient());
+                                                System.out.println("\t \t" + transfer + "| To Account No. " + transfer.getRecipient());
                                             }
                                         }
                                     }
